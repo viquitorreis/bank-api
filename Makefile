@@ -1,7 +1,7 @@
 build:
 	@go build -o bin/go-bank-api
 
-run build:
+run: build
 	@./bin/go-bank-api
 
 test:
