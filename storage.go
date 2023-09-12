@@ -76,7 +76,8 @@ func (s *PostgresStore) CreateAccount(acc *Account) error {
 }
 
 func (s *PostgresStore) DeleteAccount(id int) error {
-	return nil
+	_, err := s.db.Query("delete from account where id = $1", id)
+	return err
 }
 
 func (s *PostgresStore) UpdateAccount(*Account) error {
@@ -84,8 +85,16 @@ func (s *PostgresStore) UpdateAccount(*Account) error {
 }
 
 func (s *PostgresStore) GetAccountByID(id int) (*Account, error) {
+	rows, err := s.db.Query(`select * from account where id = $1`, id)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil, nil
+	for rows.Next() {
+		return scanIntoAccount(rows)
+	}
+
+	return nil, fmt.Errorf("Não conseguiu buscar a conta de id %d", id)
 }
 
 func (s *PostgresStore) GetAccounts() ([]*Account, error) {
@@ -114,8 +123,8 @@ func scanIntoAccount(rows *sql.Rows) (*Account, error) {
 	err := rows.Scan(&account.ID,
 		&account.FirstName,
 		&account.LastName,
-		&account.Balance,
 		&account.BankNumber,
+		&account.Balance,
 		&account.CreatedAt)
 
 	return account, err
