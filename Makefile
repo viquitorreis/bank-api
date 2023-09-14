@@ -5,5 +5,5 @@ run: build
 	@./bin/go-bank-api
 
 test:
-	@go test -v ./...
+	@go test -v ./ . . .
 
